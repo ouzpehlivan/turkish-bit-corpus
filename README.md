@@ -1,5 +1,7 @@
 # Turkish BIT Corpus: reproduction toolkit
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21969295.svg)](https://doi.org/10.5281/zenodo.21969295)
+
 Code that reproduces and verifies the three open datasets describing the complete
 corpus of the Republic of Türkiye's international investment agreements, 1962 to 2025.
 
@@ -96,6 +98,12 @@ Please cite the datasets, and the software if you use this code:
 
 > Pehlivan, O. K. (2026). *Turkish BIT Treaty Diffusion and Genealogy Network
 > (1962-2025)* [Dataset]. DataverseNO. https://doi.org/10.18710/WA7HEO
+
+> Pehlivan, O. K. (2026). *Turkish BIT Corpus: reproduction toolkit* (v1.0.0)
+> [Software]. Zenodo. https://doi.org/10.5281/zenodo.21969295
+
+The Zenodo DOI above resolves to the latest release; each release also carries its
+own version DOI (v1.0.0 is [10.5281/zenodo.21969296](https://doi.org/10.5281/zenodo.21969296)).
 
 Machine-readable citation metadata is in `CITATION.cff`.
 

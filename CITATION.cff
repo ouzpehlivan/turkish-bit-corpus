@@ -7,8 +7,19 @@ authors:
     given-names: Oguz Kaan
     orcid: "https://orcid.org/0000-0003-0136-5389"
     affiliation: "University of Oslo, Department of Public and International Law"
+version: 1.0.0
+date-released: 2026-08-16
 license: MIT
+doi: "10.5281/zenodo.21969295"
 repository-code: "https://github.com/ouzpehlivan/turkish-bit-corpus"
+url: "https://ouzpehlivan.github.io/turkish-bit-corpus/"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21969295"
+    description: "Concept DOI: resolves to the latest archived release"
+  - type: doi
+    value: "10.5281/zenodo.21969296"
+    description: "Version DOI: v1.0.0"
 keywords:
   - bilateral investment treaties
   - treaty text as data
@@ -17,21 +28,21 @@ keywords:
   - full protection and security
   - computational legal studies
 references:
-  - type: dataset
+  - type: data
     title: "Turkish Bilateral Investment Treaties Corpus (1962-2025)"
     authors:
       - family-names: Pehlivan
         given-names: Oguz Kaan
     doi: "10.18710/JX4WHH"
     year: 2026
-  - type: dataset
+  - type: data
     title: "Turkish BIT Clause-Level Annotation Dataset (1962-2025)"
     authors:
       - family-names: Pehlivan
         given-names: Oguz Kaan
     doi: "10.18710/FPNLKS"
     year: 2026
-  - type: dataset
+  - type: data
     title: "Turkish BIT Treaty Diffusion and Genealogy Network (1962-2025)"
     authors:
       - family-names: Pehlivan

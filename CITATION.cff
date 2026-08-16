@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+title: "Turkish BIT Corpus: reproduction toolkit"
+message: "If you use this software, please cite both the software and the underlying datasets."
+type: software
+authors:
+  - family-names: Pehlivan
+    given-names: Oguz Kaan
+    orcid: "https://orcid.org/0000-0003-0136-5389"
+    affiliation: "University of Oslo, Department of Public and International Law"
+license: MIT
+repository-code: "https://github.com/ouzpehlivan/turkish-bit-corpus"
+keywords:
+  - bilateral investment treaties
+  - treaty text as data
+  - treaty diffusion
+  - investment treaty design
+  - full protection and security
+  - computational legal studies
+references:
+  - type: dataset
+    title: "Turkish Bilateral Investment Treaties Corpus (1962-2025)"
+    authors:
+      - family-names: Pehlivan
+        given-names: Oguz Kaan
+    doi: "10.18710/JX4WHH"
+    year: 2026
+  - type: dataset
+    title: "Turkish BIT Clause-Level Annotation Dataset (1962-2025)"
+    authors:
+      - family-names: Pehlivan
+        given-names: Oguz Kaan
+    doi: "10.18710/FPNLKS"
+    year: 2026
+  - type: dataset
+    title: "Turkish BIT Treaty Diffusion and Genealogy Network (1962-2025)"
+    authors:
+      - family-names: Pehlivan
+        given-names: Oguz Kaan
+    doi: "10.18710/WA7HEO"
+    year: 2026

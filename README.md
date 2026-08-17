@@ -1,6 +1,6 @@
 # Turkish BIT Corpus: reproduction toolkit
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21969295.svg)](https://doi.org/10.5281/zenodo.21969295)
+[![DOI](https://img.shields.io/badge/DOI-10.18710%2FJX4WHH-blue)](https://doi.org/10.18710/JX4WHH)
 
 Code that reproduces and verifies the three open datasets describing the complete
 corpus of the Republic of Türkiye's international investment agreements, 1962 to 2025.
@@ -88,7 +88,8 @@ G=45.
 
 ## Citation
 
-Please cite the datasets, and the software if you use this code:
+Cite the datasets. This code has no separate identifier of its own: it is deposited
+with Dataset 1 (in its `code/` folder) and is covered by that dataset's DOI.
 
 > Pehlivan, O. K. (2026). *Turkish Bilateral Investment Treaties Corpus (1962-2025)*
 > [Dataset]. DataverseNO. https://doi.org/10.18710/JX4WHH
@@ -99,11 +100,9 @@ Please cite the datasets, and the software if you use this code:
 > Pehlivan, O. K. (2026). *Turkish BIT Treaty Diffusion and Genealogy Network
 > (1962-2025)* [Dataset]. DataverseNO. https://doi.org/10.18710/WA7HEO
 
-> Pehlivan, O. K. (2026). *Turkish BIT Corpus: reproduction toolkit* (v1.0.0)
-> [Software]. Zenodo. https://doi.org/10.5281/zenodo.21969295
-
-The Zenodo DOI above resolves to the latest release; each release also carries its
-own version DOI (v1.0.0 is [10.5281/zenodo.21969296](https://doi.org/10.5281/zenodo.21969296)).
+DataverseNO keeps one DOI per dataset across all versions, so the identifiers above
+always resolve to the current version. This repository is the working copy and may
+run ahead of the deposited toolkit; the deposited version is the version of record.
 
 Machine-readable citation metadata is in `CITATION.cff`.
 

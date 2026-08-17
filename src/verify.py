@@ -64,7 +64,7 @@ def main():
     check("total_articles matches extracted articles",
           all(int(tm.loc[t, "total_articles"]) ==
               sum(1 for c in ae.columns
-                  if c.startswith("Madde") and "Baslik" not in c and str(ae.loc[t, c]).strip())
+                  if c.startswith("Article") and c.endswith("- Text") and str(ae.loc[t, c]).strip())
               for t in ids))
 
     print("Dataset 3")

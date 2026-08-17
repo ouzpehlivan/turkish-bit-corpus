@@ -22,8 +22,7 @@ FPS_PHRASE = (
 
 
 def article_body(ae, tid, number):
-    prefixed = [c for c in ae.columns if c.startswith(f"Madde {number} (")]
-    column = prefixed[0] if prefixed else f"Madde {number}"
+    column = f"Article {number} - Text"
     return str(ae.loc[tid, column]) if column in ae.columns else ""
 
 

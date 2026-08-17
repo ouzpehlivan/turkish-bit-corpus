@@ -52,7 +52,7 @@ def packages(ta, tid):
 
 
 def build_documents(ae, ids):
-    cols = [c for c in ae.columns if c not in ("Anlasma Adi", "Dosya")]
+    cols = [c for c in ae.columns if c not in ("treaty_name", "source_file")]
     docs = []
     for tid in ids:
         row = ae.loc[tid]

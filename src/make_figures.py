@@ -89,7 +89,7 @@ ax.set_xticks(x)
 ax.set_xticklabels([f"{GEN_LABEL[g]}\n(n={gen_n.get(g,0)})" for g in GEN_ORDER])
 ax.set_ylabel("Share of treaties (%)")
 ax.set_ylim(-3, 108)
-ax.set_title("Clause prevalence across treaty generations — the post-2010 'new-model' shift")
+ax.set_title("Clause prevalence across treaty generations - the post-2010 'new-model' shift")
 ax.legend(loc="center left", bbox_to_anchor=(1.01, 0.5), frameon=False, fontsize=10)
 fig.subplots_adjust(bottom=0.16)
 save(fig, "fig1_generation_trends.png")
@@ -107,10 +107,10 @@ fig, (axa, axb) = plt.subplots(1, 2, figsize=(13.5, 6), gridspec_kw={"width_rati
 axa.barh([FPS_DESC[k] for k in order][::-1], counts[order].values[::-1],
          color=[fcol[k] for k in order][::-1])
 for i, k in enumerate(order[::-1]):
-    axa.text(counts[k] + 0.6, i, f"{counts[k]} ({100*counts[k]/132:.1f}%)", va="center", fontsize=9.5)
+    axa.text(counts[k] + 0.6, i, f"{counts[k]} ({100*counts[k]/len(ta):.1f}%)", va="center", fontsize=9.5)
 axa.set_xlim(0, max(counts) * 1.18)
 axa.set_xlabel("Number of treaties")
-axa.set_title("Pehlivan FPS Typology (all 132 treaties)")
+axa.set_title(f"Pehlivan FPS Typology (all {len(ta)} treaties)")
 axa.grid(axis="y")
 # stacked by generation (share)
 bottom = np.zeros(len(GEN_ORDER))
@@ -131,7 +131,7 @@ save(fig, "fig2_fps_typology.png")
 verify["fig2_fps_counts"] = counts[order].to_dict()
 
 # ===================================================================== FIG 3
-# Heatmap: 132 treaties (chronological) x selected binary variables
+# Heatmap: every treaty (chronological) x selected binary variables
 HM = [
     "1.01_preamble_right_to_regulate", "1.02_preamble_sustainable_dev", "1.04_preamble_environmental",
     "2.05_host_state_law", "2.06_closed_list", "2.19_dob",
@@ -163,7 +163,7 @@ for i in range(len(ta)):
         ax.axhline(i - 0.5, color="#e8743b", lw=1.4)
         ax.text(len(HM) + 0.4, i + 1, GEN_LABEL[g].replace("\n", " "), color="#e8743b", fontsize=8.5, fontweight="bold")
         prevg = g
-ax.set_title("Clause-presence heatmap — 132 treaties (oldest→newest, top→bottom) × 29 provisions\n",
+ax.set_title(f"Clause-presence heatmap - {len(ta)} treaties (oldest→newest, top→bottom) × 29 provisions\n",
              pad=58, loc="left")
 ax.legend(handles=[Patch(color=NAVY, label="Present (Yes)"), Patch(color="#eef1f5", label="Absent / NA")],
           loc="lower center", bbox_to_anchor=(0.5, -0.04), ncol=2, frameon=False, fontsize=11)
@@ -189,7 +189,7 @@ ax.set_yticklabels(names, fontsize=8)
 for i, v in enumerate(vals):
     ax.text(v + 0.8, i, f"{v:.0f}%", va="center", fontsize=7.5)
 ax.set_xlim(0, 108)
-ax.set_xlabel("Share of 132 treaties coded 'Yes' (%)")
+ax.set_xlabel(f"Share of {len(ta)} treaties coded 'Yes' (%)")
 ax.set_title("Prevalence of every binary provision (coloured by section)")
 ax.legend(handles=[Patch(color=SECCOL[k], label=f"Section {k}") for k in sorted(SECCOL)],
           loc="lower right", frameon=True, fontsize=9)
@@ -221,7 +221,7 @@ for i in range(len(B.columns)):
             ax.text(j, i, f"{C[i,j]:.1f}", ha="center", va="center", fontsize=6.5,
                     color="white" if abs(C[i, j]) > 0.7 else "#222")
 fig.colorbar(im, ax=ax, shrink=0.7, label="phi correlation")
-ax.set_title("Which provisions travel together — phi-correlation of key clauses", pad=12)
+ax.set_title("Which provisions travel together - phi-correlation of key clauses", pad=12)
 ax.grid(False)
 fig.subplots_adjust(bottom=0.18, left=0.18)
 save(fig, "fig5_cooccurrence.png")
@@ -236,7 +236,7 @@ FIGS = [
     ("fig3_clause_heatmap.png", "3 · Clause-presence heatmap",
      "Every treaty (chronological) against 29 provisions; newer treaties are visibly denser."),
     ("fig4_feature_prevalence.png", "4 · Prevalence of every binary provision",
-     "Share of the 132 treaties coded 'Yes' for each clause, from universal protections to rare modern additions."),
+     f"Share of the {len(ta)} treaties coded 'Yes' for each clause, from universal protections to rare modern additions."),
     ("fig5_cooccurrence.png", "5 · Clause co-occurrence",
      "Phi-correlation among key clauses, revealing the 'new-model' bundle of provisions that appear together."),
 ]
@@ -261,7 +261,7 @@ cards = "\n".join(
 html = f'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Turkish BIT Clause-Level Annotation Dataset — Visual Overview</title>
+<title>Turkish BIT Clause-Level Annotation Dataset - Visual Overview</title>
 <style>
   :root{{--navy:#1f3b66;--ink:#222;--muted:#666;--line:#e3e7ee;}}
   *{{box-sizing:border-box;}}
@@ -280,8 +280,8 @@ html = f'''<!DOCTYPE html>
 </style></head>
 <body>
 <header>
-  <h1>Turkish BIT Clause-Level Annotation Dataset — Visual Overview</h1>
-  <p>132 international investment agreements (1962–2025) × 118 coded clause-level variables</p>
+  <h1>Turkish BIT Clause-Level Annotation Dataset - Visual Overview</h1>
+  <p>{len(ta)} international investment agreements (1962–2025) × 118 coded clause-level variables</p>
   <p>DataverseNO DOI: 10.18710/FPNLKS · Dr. Oğuz Kaan Pehlivan, University of Oslo · CC BY 4.0</p>
 </header>
 <div class="wrap">

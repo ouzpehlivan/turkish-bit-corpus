@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Build five visualizations of treaty_annotations + a self-contained HTML
-dashboard. Outputs to yuklenecek/figures/ : five PNGs + dashboard.html.
+dashboard. Outputs to outputs/figures/: five PNGs + dashboard.html.
 
 The HTML embeds the PNGs as base64 (no external dependencies) so it opens in
 any browser tab offline. Every number the figures display is also printed for
@@ -20,11 +20,10 @@ from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from matplotlib.patches import Patch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-OUT = os.path.join(ROOT, "outputs", "figures")
-os.makedirs(OUT, exist_ok=True)
 sys.path.insert(0, HERE)
-from common import annotations as _ann, metadata as _meta
+from common import annotations as _ann, metadata as _meta, outdir
+
+OUT = outdir("figures")
 
 ta = _ann().reset_index()
 meta = _meta()
@@ -36,7 +35,7 @@ ta = ta.sort_values("year").reset_index(drop=True)
 
 GEN_ORDER = ["gen_1_early", "gen_2_liberalization", "gen_3_eu_harmonization", "gen_4_new_model"]
 GEN_LABEL = {"gen_1_early": "Gen 1\n1962–85", "gen_2_liberalization": "Gen 2\n1986–98",
-             "gen_3_eu_harmonization": "Gen 3\n1999–2009", "gen_4_new_model": "Gen 4\n2010–25"}
+             "gen_3_eu_harmonization": "Gen 3\n1999–2009", "gen_4_new_model": "Gen 4\n2010–24"}
 gen_n = ta["generation"].value_counts().to_dict()
 
 NAVY = "#1f3b66"
@@ -230,7 +229,7 @@ verify["fig5_n_vars"] = len(B.columns)
 # ===================================================================== HTML
 FIGS = [
     ("fig1_generation_trends.png", "1 · Clause prevalence across treaty generations",
-     "How the share of treaties carrying each clause changes from Gen 1 (1962–85) to Gen 4 (2010–25)."),
+     "How the share of treaties carrying each clause changes from Gen 1 (1962–85) to Gen 4 (2010–24)."),
     ("fig2_fps_typology.png", "2 · The Pehlivan FPS Typology",
      "Distribution of Full-Protection-and-Security formulations and their shift toward the minimum-standard model."),
     ("fig3_clause_heatmap.png", "3 · Clause-presence heatmap",

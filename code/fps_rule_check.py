@@ -8,7 +8,7 @@ present. Disagreements are printed for manual adjudication: the published datase
 resolves them by reading the full article, which is why a handful of legitimate
 divergences are expected rather than an error.
 
-Usage:  python src/fps_rule_check.py
+Usage:  python ds1/code/fps_rule_check.py
 """
 import re
 
@@ -32,18 +32,23 @@ def classify(quote, body):
     fet = bool(re.search(r"fair and equitable|equitable treatment", text, re.I))
     minimum = bool(re.search(r"minimum standard", text, re.I))
     international = bool(re.search(r"international law|customary", text, re.I))
-    domestic = bool(re.search(
-        r"(?:legal )?protection[^.]{0,100}(in accordance with|in conformity with|under)"
-        r"[^.]{0,50}laws?\b", text, re.I)) or "full legal protection" in text.lower()
+    dom = re.search(
+        r"(?:legal )?(?:protection|security)[^.]{0,100}"
+        r"(?:in accordance with|in conformity with|under)[^.]{0,50}\blaws?\b"
+        r"|(?:in accordance with|in conformity with|under)\s+its\s+laws?[^.]{0,60}"
+        r"(?:protection|security)", text, re.I)
+    domestic = bool(dom) and not re.search(
+        r"international|customary|minimum standard", dom.group(0), re.I)
+    domestic = domestic or "full legal protection" in text.lower()
     comparator = bool(re.search(
         r"(protection|security)[^.]{0,140}((no |not be |not )?less favou?rable"
         r"|not (be )?less than)", text, re.I))
-    if minimum and fet:
-        return "C"
-    if domestic and not fet:
+    if domestic:
         return "D"
     if comparator and not fet:
         return "F"
+    if minimum and fet:
+        return "C"
     if international and fet:
         return "E"
     if fet:

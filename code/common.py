@@ -1,18 +1,29 @@
-"""Shared loading helpers. Every script reads the published files from data/."""
+"""Shared loading helpers for downloaded and standalone release layouts.
+
+The toolkit can be run either from a cloned/downloaded repository containing
+``ds1/data/{ds1,ds2,ds3}``, or directly from the published release where the
+three dataset directories are siblings.  ``TURKISH_BIT_DATA_ROOT`` and
+``TURKISH_BIT_OUTPUT_ROOT`` remain available for explicit staging paths.
+"""
 import os
 import re
 
 import pandas as pd
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA = os.path.join(ROOT, "data")
-OUT = os.path.join(ROOT, "outputs")
+WORKSPACE = os.path.dirname(ROOT)
+_downloaded_data = os.path.join(ROOT, "data")
+DATA = os.environ.get(
+    "TURKISH_BIT_DATA_ROOT",
+    _downloaded_data if os.path.isdir(_downloaded_data) else WORKSPACE,
+)
+OUT = os.environ.get("TURKISH_BIT_OUTPUT_ROOT", os.path.join(ROOT, "outputs"))
 
 READ = dict(keep_default_na=False, dtype=str)
 
 
 def _find(dataset, filename):
-    """Locate a file inside data/<dataset>/, tolerating an extra nesting level."""
+    """Locate a published file, tolerating one additional nesting level."""
     base = os.path.join(DATA, dataset)
     direct = os.path.join(base, filename)
     if os.path.exists(direct):
@@ -21,7 +32,8 @@ def _find(dataset, filename):
         if filename in files:
             return os.path.join(dirpath, filename)
     raise FileNotFoundError(
-        f"{filename} not found under data/{dataset}. Run src/download_data.py first."
+        f"{filename} not found under {base}. Set TURKISH_BIT_DATA_ROOT or "
+        "run download_data.py to stage the release."
     )
 
 

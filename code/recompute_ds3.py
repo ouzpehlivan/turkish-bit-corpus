@@ -5,7 +5,7 @@ genealogy edges with the exact parameters documented in
 00_REPRODUCIBILITY_PROTOCOL.txt, writes them to outputs/ds3/, and (if the
 published DS3 is present in data/ds3) reports whether the reproduction matches.
 
-Usage:  python src/recompute_ds3.py
+Usage:  python ds1/code/recompute_ds3.py
 """
 import os
 import re
@@ -97,18 +97,28 @@ def main():
     frame["year"] = frame.treaty_id.map(year)
     size = frame.groupby("cluster").size()
     first_year = frame.groupby("cluster")["year"].min()
-    order = sorted(size.index, key=lambda c: (-size[c], first_year[c]))
+    first_member = frame.groupby("cluster")["treaty_id"].min()
+    # The member-id tie-break keeps family IDs stable even if SciPy assigns
+    # different internal cluster labels to otherwise identical clusters.
+    order = sorted(size.index,
+                   key=lambda c: (-size[c], first_year[c], first_member[c]))
     fid = {c: "F%02d" % (k + 1) for k, c in enumerate(order)}
 
     fam_rows = []
     for cluster in order:
         members = frame[frame.cluster == cluster].treaty_id.tolist()
         if len(members) > 1:
-            model = pd.Series([GEN2MODEL[tm.loc[t, "generation"]] for t in members]).mode()[0]
-            modal_fps = pd.Series([ta.loc[t, "3.12_fps_typology"] for t in members]).mode()[0]
+            model_modes = sorted(pd.Series(
+                [GEN2MODEL[tm.loc[t, "generation"]] for t in members]).mode())
+            fps_modes = sorted(pd.Series(
+                [ta.loc[t, "3.12_fps_typology"] for t in members]).mode())
             years = [year[t] for t in members]
-            label = (f"{model} model (n={len(members)}, {min(years)}-{max(years)}, "
-                     f"dom. FPS={modal_fps})")
+            model_label = (f"{model_modes[0]} model" if len(model_modes) == 1 else
+                           f"Mixed-generation model ({'/'.join(model_modes)} tie)")
+            fps_label = (f"dom. FPS={fps_modes[0]}" if len(fps_modes) == 1 else
+                         f"FPS tie={'/'.join(fps_modes)}")
+            label = (f"{model_label} (n={len(members)}, "
+                     f"{min(years)}-{max(years)}, {fps_label})")
         else:
             label = f"Singleton ({year[members[0]]})"
         for t in members:
@@ -119,7 +129,8 @@ def main():
         "family_label", "family_size", "fps_typology"
     ]).sort_values(["family_id", "signature_year", "treaty_id"])
 
-    # Genealogy: each treaty's most similar strictly earlier treaty.
+    # Genealogy: each treaty's most similar predecessor in the deterministic
+    # (signature_date, treaty_id) total order. Same-day predecessors can occur.
     fam_of = families.set_index("treaty_id").family_id
     chron = sorted(ids, key=lambda t: (tm.loc[t, "signature_date"], t))
     index_of = {t: k for k, t in enumerate(ids)}
@@ -139,26 +150,48 @@ def main():
         "child_partner", "child_year", "cosine_similarity", "year_gap", "same_family"])
 
     out = outdir("ds3")
-    sm.round(6).to_csv(os.path.join(out, "similarity_matrix.csv"))
-    pairs.to_csv(os.path.join(out, "treaty_pairs.csv"), index=False)
-    families.to_csv(os.path.join(out, "treaty_families.csv"), index=False)
-    edges.to_csv(os.path.join(out, "genealogy_edges.csv"), index=False)
+    sm.round(6).to_csv(os.path.join(out, "similarity_matrix.csv"),
+                       float_format="%.6f", lineterminator="\n")
+    pairs.to_csv(os.path.join(out, "treaty_pairs.csv"), index=False,
+                 float_format="%.6f", lineterminator="\n")
+    families.to_csv(os.path.join(out, "treaty_families.csv"), index=False,
+                    lineterminator="\n")
+    edges.to_csv(os.path.join(out, "genealogy_edges.csv"), index=False,
+                 float_format="%.6f", lineterminator="\n")
 
     r = np.corrcoef(pairs.cosine_similarity, pairs.shared_clause_features)[0, 1]
     print(f"treaties {len(ids)} | pairs {len(pairs)} | families {families.family_id.nunique()} "
-          f"| edges {len(edges)} | text-vs-legal r = {r:.2f}")
+          f"| edges {len(edges)} | text-vs-legal r = {r:.6f}")
     print(f"written to outputs/ds3/")
 
     # Compare against the published DS3 when it is available.
     try:
         published = load("ds3", "genealogy_edges.csv")
-        same_edges = (len(published) == len(edges) and
-                      set(zip(published.parent_treaty, published.child_treaty)) ==
-                      set(zip(edges.parent_treaty, edges.child_treaty)))
+        generated_edges = pd.read_csv(
+            os.path.join(out, "genealogy_edges.csv"),
+            keep_default_na=False, dtype=str,
+        )
+        same_edges = (list(published.columns) == list(generated_edges.columns) and
+                      published.reset_index(drop=True).equals(
+                          generated_edges.reset_index(drop=True)))
         published_fam = load("ds3", "treaty_families.csv").set_index("treaty_id")
-        same_fam = all(published_fam.loc[t, "family_id"] == fam_of[t] for t in ids)
-        print(f"reproduction check: edges identical = {same_edges} | "
-              f"family assignment identical = {same_fam}")
+        same_fam = published_fam.astype(str).sort_index().equals(
+            families.set_index("treaty_id").astype(str).sort_index())
+        published_sm = load("ds3", "similarity_matrix.csv", index_col=0).astype(float)
+        published_pairs = load("ds3", "treaty_pairs.csv")
+        generated_pairs = pd.read_csv(
+            os.path.join(out, "treaty_pairs.csv"),
+            keep_default_na=False, dtype=str,
+        )
+        same_matrix = (list(published_sm.index) == list(sm.index) and
+                       list(published_sm.columns) == list(sm.columns) and
+                       np.allclose(published_sm.values, sm.values, atol=5e-7))
+        same_pairs = (list(published_pairs.columns) == list(generated_pairs.columns) and
+                      published_pairs.reset_index(drop=True).equals(
+                          generated_pairs.reset_index(drop=True)))
+        print("reproduction check: "
+              f"matrix identical = {same_matrix} | pairs identical = {same_pairs} | "
+              f"families identical = {same_fam} | edges identical = {same_edges}")
     except FileNotFoundError:
         print("reproduction check skipped (published DS3 not in data/ds3)")
 

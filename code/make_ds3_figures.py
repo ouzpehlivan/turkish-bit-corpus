@@ -3,11 +3,17 @@
 the Turkish BIT Diffusion / Genealogy Network, generated only from the packaged
 Dataset 3 CSV files. Five PNG charts are embedded as base64 so the HTML opens
 offline in any browser.
+
+Like every other script here, this one reads the published files from data/ and
+writes to outputs/. Run python ds1/code/download_data.py first to populate data/, or place
+the Dataset 3 CSV files in data/ds3/ by hand. Outputs go to
+outputs/ds3_figures/: the five PNGs and ds3_visual_analysis.html.
 """
 import base64
 import io
 import os
 import re
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -16,10 +22,16 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sm = pd.read_csv(os.path.join(HERE, "similarity_matrix.csv"), index_col=0)
-pairs = pd.read_csv(os.path.join(HERE, "treaty_pairs.csv"))
-fam = pd.read_csv(os.path.join(HERE, "treaty_families.csv"))
-edges = pd.read_csv(os.path.join(HERE, "genealogy_edges.csv"))
+sys.path.insert(0, HERE)
+from common import load, outdir
+
+NUM = dict(dtype=None, keep_default_na=True)
+sm = load("ds3", "similarity_matrix.csv", index_col=0, **NUM)
+pairs = load("ds3", "treaty_pairs.csv", **NUM)
+fam = load("ds3", "treaty_families.csv", **NUM)
+edges = load("ds3", "genealogy_edges.csv", **NUM)
+
+OUTDIR = outdir("ds3_figures")
 
 NAVY = "#0b3d91"
 plt.rcParams.update({"font.size": 11, "axes.titlesize": 14, "axes.titleweight": "bold",
@@ -27,7 +39,8 @@ plt.rcParams.update({"font.size": 11, "axes.titlesize": 14, "axes.titleweight": 
                      "axes.spines.top": False, "axes.spines.right": False})
 
 MODEL_COLOR = {"Liberalization model": "#2c6fbb", "New Turkish model": "#e8743b",
-               "EU-harmonization model": "#19a979", "Singleton": "#b0b0b0", "Early": "#945ecf"}
+               "EU-harmonization model": "#19a979", "Early model": "#945ecf",
+               "Mixed-generation model": "#7f8c8d", "Singleton": "#b0b0b0"}
 
 
 def model_of(label):
@@ -37,7 +50,7 @@ def model_of(label):
     return "Singleton"
 
 
-FIGDIR = os.path.join(HERE, "figures")
+FIGDIR = os.path.join(OUTDIR, "figures")
 os.makedirs(FIGDIR, exist_ok=True)
 
 
@@ -84,7 +97,8 @@ ax.set_yticks(range(len(fl))); ax.set_yticklabels(fl["family_label"], fontsize=7
 for i, v in enumerate(fl["family_size"]):
     ax.text(v+0.2, i, str(int(v)), va="center", fontsize=8)
 ax.set_xlabel("treaties in family"); ax.set_title(f"{fam['family_id'].nunique()} textual families by size")
-ax.legend(handles=[Patch(color=c, label=k) for k, c in MODEL_COLOR.items() if k != "Early"], fontsize=9, loc="lower right")
+ax.legend(handles=[Patch(color=c, label=k) for k, c in MODEL_COLOR.items()],
+          fontsize=8.5, loc="lower right")
 ax.grid(axis="y")
 save(fig, "ds3_fig_c_families.png")
 
@@ -96,7 +110,7 @@ fig.colorbar(sc, ax=ax, label="cosine similarity (parent→child)")
 lim = [1960, 2026]; ax.plot(lim, lim, color="#aaa", ls=":", lw=1)
 ax.set_xlim(lim); ax.set_ylim(lim)
 ax.set_xlabel("child treaty signature year"); ax.set_ylabel("parent (predecessor) signature year")
-ax.set_title(f"Genealogy: each treaty's most-similar earlier predecessor ({len(edges)} descent edges)")
+ax.set_title(f"Genealogy: most-similar predecessor in (date, treaty ID) order ({len(edges)} descent edges)")
 save(fig, "ds3_fig_d_genealogy.png")
 
 # E. textual vs legal-feature similarity
@@ -112,8 +126,8 @@ save(fig, "ds3_fig_e_text_vs_legal.png")
 FIGS = [
     ("ds3_fig_a_cosine.png", "1 · Pairwise textual similarity", f"How similar treaty texts are across all {len(pairs):,} pairs, with the genealogy (≥0.45) and high-similarity thresholds marked."),
     ("ds3_fig_b_heatmap.png", "2 · Similarity matrix by family", f"The {len(sm)}×{len(sm)} cosine matrix reordered by family - bright square blocks are the textual families the clustering recovers."),
-    ("ds3_fig_c_families.png", "3 · Textual families", f"The {fam['family_id'].nunique()} families by size, coloured by the dominant model (Liberalization, New Turkish, EU-harmonization, Singleton)."),
-    ("ds3_fig_d_genealogy.png", "4 · Genealogy of descent", "Each treaty linked to its most-similar earlier predecessor; points below the diagonal trace how drafting diffused forward in time."),
+    ("ds3_fig_c_families.png", "3 · Textual families", f"The {fam['family_id'].nunique()} families by size, coloured by generation profile; tied families are labelled and coloured explicitly."),
+    ("ds3_fig_d_genealogy.png", "4 · Genealogy of descent", "Each treaty is linked to its most-similar predecessor in the deterministic (signature date, treaty ID) order; this also resolves same-day signatures."),
     ("ds3_fig_e_text_vs_legal.png", "5 · Text vs legal features", "Whether treaties that read alike (cosine) also share the same Dataset 2 clause coding - the two similarity notions largely agree."),
 ]
 
@@ -149,10 +163,10 @@ html = f'''<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/>
 <footer>Generated by code/make_ds3_figures.py, deposited with Dataset 1, from the Dataset 3 CSV files.</footer>
 </div></body></html>'''
 
-with open(os.path.join(HERE, "ds3_visual_analysis.html"), "w", encoding="utf-8") as f:
+with open(os.path.join(OUTDIR, "ds3_visual_analysis.html"), "w", encoding="utf-8") as f:
     f.write(html)
 
-print("ds3_visual_analysis.html:", os.path.getsize(os.path.join(HERE, "ds3_visual_analysis.html")) // 1024, "KB")
+print("ds3_visual_analysis.html:", os.path.getsize(os.path.join(OUTDIR, "ds3_visual_analysis.html")) // 1024, "KB")
 print("pairs cosine median:", round(pairs["cosine_similarity"].median(), 3),
       "| text-vs-legal r:", round(np.corrcoef(pairs["cosine_similarity"], pairs["shared_clause_features"])[0, 1], 3))
 print("families:", fam["family_id"].nunique(), "| edges:", len(edges))

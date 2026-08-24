@@ -24,35 +24,36 @@ git clone https://github.com/ouzpehlivan/turkish-bit-corpus.git
 cd turkish-bit-corpus
 pip install -r requirements.txt
 
-python src/download_data.py    # fetch the three datasets from DataverseNO into data/
-python src/verify.py           # 24-check cross-dataset verification suite
-python src/recompute_ds3.py    # rebuild the network from Datasets 1 and 2
-python src/fps_rule_check.py   # re-derive the FPS typology from the clause text
-python src/make_figures.py     # regenerate the five figures and the dashboard
+python code/download_data.py    # fetch the three datasets from DataverseNO into data/
+python code/verify.py           # 51-check cross-dataset verification suite
+python code/recompute_ds3.py    # rebuild the network from Datasets 1 and 2
+python code/fps_rule_check.py   # re-derive the FPS typology from the clause text
+python code/make_figures.py     # regenerate the five figures and the dashboard
 ```
 
-`verify.py` exits non-zero if any check fails, so it can be wired into CI.
+`code/verify.py` exits non-zero if any check fails, so it can be wired into CI.
 
 ## What each script does
 
-**`download_data.py`** retrieves the three datasets through the Dataverse access API
+**`code/download_data.py`** retrieves the three datasets through the Dataverse access API
 and extracts them into `data/ds1`, `data/ds2`, `data/ds3`. If a download fails, the
 script prints the DOI to fetch manually.
 
-**`verify.py`** runs the checks the datasets are released against: row and column
-counts, the FPS block identity across all three datasets, provenance of every clause
-extract against the article extracts, coding-log synchronisation with the metadata,
-article counts, matrix symmetry, the pair table against the matrix, family labels
-re-derived from their member rows, and the genealogy edges against the argmax rule
-that generated them.
+**`code/verify.py`** runs the 51 checks the datasets are released against: 28 for Datasets 1
+and 2, 17 for Dataset 3 and 6 for the convenience copies and derived presentation
+files. They cover row and column counts, the FPS block identity across all three
+datasets, provenance of every clause extract, coding-log synchronisation, matrix
+symmetry, the pair table against the matrix, family labels re-derived from their
+member rows, the genealogy edges against the argmax rule, the audit ledger, and the
+data embedded in the interactive HTML files.
 
-**`recompute_ds3.py`** rebuilds Dataset 3 from Datasets 1 and 2 with the documented
+**`code/recompute_ds3.py`** rebuilds Dataset 3 from Datasets 1 and 2 with the documented
 parameters (TF-IDF with English stop-words, sublinear term frequency, `max_df=0.9`;
 average-linkage clustering on cosine distance cut at 0.65; edges at cosine 0.45 or
 above), writes the four tables to `outputs/ds3/`, and reports whether the
 reproduction matches the published dataset. It does.
 
-**`fps_rule_check.py`** applies the decision procedure of the Pehlivan FPS Typology
+**`code/fps_rule_check.py`** applies the decision procedure of the Pehlivan FPS Typology
 mechanically to each recorded clause quote and compares the result with the published
 classification, then re-scans every Type G treaty to confirm that no
 protection-and-security formulation was missed. A handful of divergences is expected
@@ -61,17 +62,26 @@ where an interpretive paragraph or a comparator clause elsewhere in the article
 determines the type. The script prints them for inspection rather than treating them
 as errors.
 
-**`make_figures.py`** regenerates the five analytical figures and the offline
+**`code/make_figures.py`** regenerates the five analytical figures and the offline
 dashboard from the annotation table.
+
+Four further scripts regenerate the deposited presentation files: `code/make_ds2_explorer.py`
+(Dataset 2 interactive explorer), `code/make_ds3_figures.py` and `code/make_ds3_network.py`
+(Dataset 3 figures and interactive network), and `code/apply_audit_corrections_2026_08_22.py`,
+which applies and re-verifies the corrections recorded in the audit ledger deposited with
+Dataset 1. The last is assertion-heavy and idempotent: re-running it on corrected files
+leaves them unchanged.
+
+This toolkit is also deposited with Dataset 1 under `code/`, so that the data and the code
+that produced them are preserved together under a single identifier.
 
 ## Reproducing the datasets from the treaty texts alone
 
 The datasets ship with `00_REPRODUCIBILITY_PROTOCOL.txt` (in Dataset 1), a six-step
 protocol covering corpus fixation, article extraction, the FPS typology decision
 procedure, clause-level coding conventions, the similarity and genealogy computation,
-and the pre-release verification suite. The scripts here implement Steps 5 and 6 in
-full and Step 3 as a checker; Steps 2 and 4 involve legal judgment on clause text and
-are documented rather than automated.
+and the pre-release verification suite. The scripts here implement Steps 5 and 6 in full and Step 3 as a checker; Steps 2 and 4
+involve legal judgment on clause text and are documented rather than automated.
 
 ## The FPS typology in one paragraph
 

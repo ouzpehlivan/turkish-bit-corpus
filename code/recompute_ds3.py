@@ -5,7 +5,7 @@ genealogy edges with the exact parameters documented in
 00_REPRODUCIBILITY_PROTOCOL.txt, writes them to outputs/ds3/, and (if the
 published DS3 is present in data/ds3) reports whether the reproduction matches.
 
-Usage:  python ds1/code/recompute_ds3.py
+Usage:  python code/recompute_ds3.py
 """
 import os
 import re

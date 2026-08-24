@@ -5,7 +5,7 @@ Dataset 3 CSV files. Five PNG charts are embedded as base64 so the HTML opens
 offline in any browser.
 
 Like every other script here, this one reads the published files from data/ and
-writes to outputs/. Run python ds1/code/download_data.py first to populate data/, or place
+writes to outputs/. Run python code/download_data.py first to populate data/, or place
 the Dataset 3 CSV files in data/ds3/ by hand. Outputs go to
 outputs/ds3_figures/: the five PNGs and ds3_visual_analysis.html.
 """

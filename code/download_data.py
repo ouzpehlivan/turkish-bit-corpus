@@ -4,7 +4,7 @@ Each dataset is fetched as a ZIP through the Dataverse access API and extracted
 into data/ds1, data/ds2, data/ds3. Nothing in this repository redistributes the
 data; it is retrieved from the DOI at run time.
 
-Usage:  python ds1/code/download_data.py
+Usage:  python code/download_data.py
 """
 import io
 import os

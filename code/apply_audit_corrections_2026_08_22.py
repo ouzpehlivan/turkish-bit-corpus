@@ -20,8 +20,34 @@ from pathlib import Path
 import pandas as pd
 
 
-ROOT = Path(os.environ.get("TURKISH_BIT_AUDIT_ROOT",
-                           Path(__file__).resolve().parents[2])).resolve()
+def _resolve_root() -> Path:
+    """Locate the directory holding ds1/, ds2/ and ds3/.
+
+    Mirrors common.py's resolution order so the script runs both from the
+    published release (where the dataset directories are siblings of code/'s
+    parent) and from a repository clone (where download_data.py stages them
+    under <repo>/data).
+    """
+    here = Path(__file__).resolve()
+    candidates = [
+        os.environ.get("TURKISH_BIT_AUDIT_ROOT"),
+        os.environ.get("TURKISH_BIT_DATA_ROOT"),
+        here.parents[1] / "data",
+        here.parents[2],
+    ]
+    for candidate in candidates:
+        if candidate and (Path(candidate) / "ds1").is_dir():
+            return Path(candidate).resolve()
+    raise SystemExit(
+        "Could not locate the release directories. None of the following "
+        "contains a ds1/ folder:\n  "
+        + "\n  ".join(str(c) for c in candidates if c)
+        + "\nSet TURKISH_BIT_AUDIT_ROOT to the directory holding ds1/, ds2/ "
+          "and ds3/, or run download_data.py to stage the release."
+    )
+
+
+ROOT = _resolve_root()
 AUDIT_DATE = "2026-08-22"
 
 

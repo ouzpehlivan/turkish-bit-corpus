@@ -8,7 +8,7 @@ present. Disagreements are printed for manual adjudication: the published datase
 resolves them by reading the full article, which is why a handful of legitimate
 divergences are expected rather than an error.
 
-Usage:  python ds1/code/fps_rule_check.py
+Usage:  python code/fps_rule_check.py
 """
 import re
 

@@ -8,7 +8,7 @@ edges against the argmax rule), the .parquet copies against their .csv originals
 and the family legend embedded in the Dataset 3 network page against
 treaty_families.csv.
 
-Usage:  python ds1/code/verify.py
+Usage:  python code/verify.py
 Exit code 0 if every check passes, 1 otherwise.
 """
 import json

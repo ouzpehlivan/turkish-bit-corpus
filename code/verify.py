@@ -347,7 +347,7 @@ def main():
         & audit.field.isin(ta.columns)
     ]
     check("audit ledger agrees with all corrected annotation cells",
-          not audit_bad and len(corrected_annotations) == 826,
+          not audit_bad and len(corrected_annotations) == 831,
           str((len(corrected_annotations), audit_bad[:5])))
 
     # The ZIP is the canonical cleaned-text bundle. Metadata counts and source
